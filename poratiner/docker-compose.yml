@@ -1,0 +1,24 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:2.23.0-alpine
+    command: --log-level DEBUG
+    restart: always
+    ports:
+      - 8000:8000
+      - 9009:9000
+      - 9010:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    labels:
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.rule=Host(`yourdomain.com`)"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=production"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.services.portainer.loadbalancer.server.scheme=http"
+    networks:
+      - traefik
+networks:
+  traefik:
+    external: true
